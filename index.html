@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tensi — Investor Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg: #0a1a1c;
+  --surface: #0f2224;
+  --card-front: #0f2224;
+  --card-back: #001a14;
+  --amber: #FFCD00;
+  --amber-dim: rgba(255,205,0,0.15);
+  --white: #F0EDE6;
+  --muted: #4a7a7e;
+  --border: rgba(255,205,0,0.12);
+  --red: #e07070;
+  --green: #6fcfb0;
+  --radius: 16px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Barlow', sans-serif;
+  overflow: hidden;
+}
+
+/* ─── SPLASH ─── */
+#splash {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+#splash.hidden { opacity: 0; visibility: hidden; }
+.splash-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(64px, 20vw, 100px);
+  letter-spacing: 6px;
+  color: var(--amber);
+  line-height: 1;
+}
+.splash-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.splash-loader {
+  margin-top: 40px;
+  width: 120px; height: 2px;
+  background: rgba(255,205,0,0.15);
+  position: relative; overflow: hidden;
+}
+.splash-loader::after {
+  content: '';
+  position: absolute; left: -100%; top: 0;
+  width: 100%; height: 100%;
+  background: var(--amber);
+  animation: load 1.2s ease forwards;
+}
+@keyframes load { to { left: 0; } }
+
+/* ─── LAYOUT ─── */
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ─── HEADER ─── */
+.app-header {
+  padding: 14px 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.header-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: var(--amber);
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.score-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--amber);
+  background: var(--amber-dim);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.menu-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 18px; padding: 2px;
+  display: flex; align-items: center;
+}
+
+/* ─── CATEGORY TABS ─── */
+.cat-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 20px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+}
+.cat-tabs::-webkit-scrollbar { display: none; }
+.cat-tab {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.cat-tab.active {
+  background: var(--amber);
+  color: #001a1c;
+  border-color: var(--amber);
+  font-weight: 600;
+}
+
+/* ─── PROGRESS ─── */
+.progress-wrap {
+  padding: 8px 20px 4px;
+  flex-shrink: 0;
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.progress-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.progress-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--amber);
+}
+.progress-bar {
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--amber);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ─── CARD AREA ─── */
+.card-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── FLASHCARD ─── */
+.flashcard-wrap {
+  width: 100%;
+  max-width: 520px;
+  height: 100%;
+  perspective: 1200px;
+  cursor: pointer;
+}
+.flashcard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+  border-radius: var(--radius);
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* FRONT */
+.card-front {
+  background: var(--card-front);
+  border: 1px solid var(--border);
+}
+.card-front-top {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-cat-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.card-diff {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.diff-hard { background: rgba(220,80,80,0.15); color: var(--red); border: 1px solid rgba(220,80,80,0.25); }
+.diff-medium { background: rgba(255,205,0,0.1); color: var(--amber); border: 1px solid var(--border); }
+.diff-standard { background: rgba(111,207,176,0.1); color: var(--green); border: 1px solid rgba(111,207,176,0.2); }
+
+.card-front-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 28px;
+  text-align: center;
+}
+.card-q-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 56px;
+  color: rgba(255,205,0,0.08);
+  line-height: 1;
+  margin-bottom: -8px;
+}
+.card-question {
+  font-size: clamp(17px, 4vw, 22px);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+.tap-hint {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tap-hint::before, .tap-hint::after {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 1px;
+  background: var(--muted);
+}
+
+/* BACK */
+.card-back {
+  background: var(--card-back);
+  border: 1px solid rgba(111,207,176,0.15);
+  transform: rotateY(180deg);
+}
+.card-back-top {
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid rgba(111,207,176,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.back-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--green);
+  text-transform: uppercase;
+}
+.back-q {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  max-width: 60%;
+  text-align: right;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-back-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 22px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,205,0,0.2) transparent;
+}
+.card-back-body::-webkit-scrollbar { width: 3px; }
+.card-back-body::-webkit-scrollbar-track { background: transparent; }
+.card-back-body::-webkit-scrollbar-thumb { background: rgba(255,205,0,0.2); border-radius: 3px; }
+
+.back-numbers {
+  background: rgba(255,205,0,0.06);
+  border: 1px solid rgba(255,205,0,0.15);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  line-height: 1.8;
+  color: rgba(240,237,230,0.7);
+}
+.back-numbers strong, .back-numbers span.n { color: var(--amber); font-weight: 600; }
+
+.answer-section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+.answer-body {
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgba(240,237,230,0.88);
+  border-left: 2px solid rgba(111,207,176,0.3);
+  padding-left: 12px;
+  margin-bottom: 14px;
+}
+.why-section {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+.why-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.why-body {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ─── BOTTOM ACTIONS ─── */
+.card-actions {
+  padding: 10px 20px 14px;
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+}
+.action-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-prev { background: rgba(255,255,255,0.05); color: var(--muted); }
+.btn-prev:active { background: rgba(255,255,255,0.09); }
+.btn-done { background: rgba(111,207,176,0.12); color: var(--green); border: 1px solid rgba(111,207,176,0.2); }
+.btn-done.marked { background: rgba(111,207,176,0.25); }
+.btn-done:active { background: rgba(111,207,176,0.3); }
+.btn-next { background: var(--amber); color: #001a1c; font-weight: 700; }
+.btn-next:active { background: #e6b800; }
+
+/* ─── MENU DRAWER ─── */
+.drawer-overlay {
+  position: fixed; inset: 0; z-index: 150;
+  background: rgba(0,0,0,0.6);
+  opacity: 0; visibility: hidden;
+  transition: all 0.3s;
+}
+.drawer-overlay.open { opacity: 1; visibility: visible; }
+
+.drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(320px, 85vw);
+  background: #0a1f22;
+  border-left: 1px solid var(--border);
+  z-index: 151;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.drawer-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--amber);
+}
+.drawer-close {
+  background: none; border: none; color: var(--muted);
+  font-size: 20px; cursor: pointer; padding: 2px;
+}
+.drawer-stats {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.stat-box {
+  background: rgba(255,205,0,0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: var(--amber);
+  line-height: 1;
+}
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.drawer-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,205,0,0.2) transparent;
+}
+.drawer-q-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+  transition: background 0.15s;
+}
+.drawer-q-item:hover { background: rgba(255,255,255,0.04); }
+.drawer-q-item.current { background: rgba(255,205,0,0.08); }
+.dqi-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  min-width: 22px;
+}
+.dqi-text {
+  font-size: 12px;
+  color: rgba(240,237,230,0.7);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+.dqi-check {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.dqi-check.done { background: var(--green); border-color: var(--green); color: #001a14; }
+
+/* ─── SWIPE FEEDBACK ─── */
+.swipe-feedback {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 3px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+.swipe-feedback.left { right: 24px; color: var(--amber); }
+.swipe-feedback.right { left: 24px; color: var(--green); }
+.swipe-feedback.show { opacity: 1; }
+
+/* ─── COMPLETE SCREEN ─── */
+#complete-screen {
+  position: fixed; inset: 0; z-index: 180;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 30px;
+  text-align: center;
+  opacity: 0; visibility: hidden;
+  transition: all 0.4s;
+}
+#complete-screen.show { opacity: 1; visibility: visible; }
+.complete-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+.complete-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  letter-spacing: 4px;
+  color: var(--amber);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.complete-sub {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+.complete-stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+.complete-stat {
+  text-align: center;
+}
+.complete-stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 44px;
+  color: var(--amber);
+  line-height: 1;
+}
+.complete-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.complete-btn {
+  background: var(--amber);
+  color: #001a1c;
+  border: none;
+  border-radius: 12px;
+  padding: 15px 40px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">TENSI</div>
+  <div class="splash-sub">Investor Prep · 100 Questions</div>
+  <div class="splash-loader"></div>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-title">All Questions</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-stats">
+    <div class="stat-box">
+      <div class="stat-num" id="doneCountDrawer">0</div>
+      <div class="stat-label">Practised</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="totalCountDrawer">100</div>
+      <div class="stat-label">Total</div>
+    </div>
+  </div>
+  <div class="drawer-list" id="drawerList"></div>
+</div>
+
+<!-- COMPLETE SCREEN -->
+<div id="complete-screen">
+  <div class="complete-icon">🎯</div>
+  <div class="complete-title">Deck Complete</div>
+  <div class="complete-sub">You've practised every question in this category.<br>You're ready for May 7.</div>
+  <div class="complete-stats">
+    <div class="complete-stat">
+      <div class="complete-stat-num" id="cs-done">0</div>
+      <div class="complete-stat-label">Practised</div>
+    </div>
+    <div class="complete-stat">
+      <div class="complete-stat-num" id="cs-total">0</div>
+      <div class="complete-stat-label">Total</div>
+    </div>
+  </div>
+  <button class="complete-btn" onclick="restartDeck()">Restart Deck</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="app-header">
+    <div class="header-logo">TENSI</div>
+    <div class="header-right">
+      <div class="score-pill"><span id="doneCount">0</span> done</div>
+      <button class="menu-btn" onclick="openDrawer()">☰</button>
+    </div>
+  </div>
+
+  <div class="cat-tabs" id="catTabs"></div>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span class="progress-label" id="progressLabel">Question 1 of 100</span>
+      <span class="progress-count" id="progressPercent">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="card-area" id="cardArea">
+    <div class="swipe-feedback left" id="sfLeft">NEXT →</div>
+    <div class="swipe-feedback right" id="sfRight">← PREV</div>
+    <div class="flashcard-wrap">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <!-- FRONT -->
+        <div class="card-face card-front">
+          <div class="card-front-top">
+            <span class="card-cat-tag" id="cardCat">Market</span>
+            <span class="card-diff" id="cardDiff">Hard</span>
+          </div>
+          <div class="card-front-body">
+            <div class="card-q-num" id="cardNum">01</div>
+            <div class="card-question" id="cardQuestion">Loading...</div>
+            <div class="tap-hint">tap to reveal answer</div>
+          </div>
+        </div>
+        <!-- BACK -->
+        <div class="card-face card-back">
+          <div class="card-back-top">
+            <span class="back-label">Answer</span>
+            <span class="back-q" id="backQ"></span>
+          </div>
+          <div class="card-back-body" id="cardBackBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-actions">
+    <button class="action-btn btn-prev" onclick="prevCard()">← Prev</button>
+    <button class="action-btn btn-done" id="doneBtn" onclick="toggleDone()">✓ Done</button>
+    <button class="action-btn btn-next" onclick="nextCard()">Next →</button>
+  </div>
+</div>
+
+<script>
+const CARDS = [
+  // ── MARKET ──
+  { cat:"Market", diff:"standard", q:"What makes this problem urgent and worth solving now?",
+    a:`Honestly — it's not urgent. It's late. We should have had this years ago. Labour shortages mean every hour of a tradesperson's time is more expensive than five years ago. Documentation requirements are increasing. Timelines are tighter. And yet the average builder is still opening five PDFs, switching between email, WhatsApp, and three different tools just to answer one question about a drawing. Think about the person uploading the same documents every day, searching manually for one item. Their capacity should go toward thinking creatively — how to build better, faster, smarter. We're taking away the groundwork they find boring so they can focus on what matters. AI search and mobile workflows aren't a future concept — they're available right now. Nobody in Australia is deploying them properly for SMEs. The window is open today. In two years it won't be.`,
+    why:"Lead with the human cost — the person doing boring repetitive work. Then close with the timing window." },
+
+  { cat:"Market", diff:"standard", q:"Why will builders and tradies use Tensi instead of Procore or Aconex?",
+    a:`Procore and Aconex are enterprise-level software. I've looked at Procore myself — I'm reasonably tech-savvy and I get lost in it. If I'm getting lost, imagine a tradie on site who just wants one answer and has no time to figure out a navigation system. These people don't have time to think about how to use a tool. They want to get stuff done. That's been our core design principle — quick and easy — because we know the customer. We are the customer. Second: affordability. Procore pricing doesn't make sense for a 10-person builder. That builder doesn't need all the features built for Tier 1 enterprise. They need what they actually use, at a price that fits their size. We're entering a large untapped market and building specifically for them — not a scaled-down version of something built for someone else.`,
+    why:"The 'I get lost in Procore myself' line is gold. Honest, relatable, makes the point better than stats." },
+
+  { cat:"Market", diff:"standard", q:"What proof do you have that users want this?",
+    a:`We didn't invent this problem. We've lived it. Justin has run a design and drafting firm for years. Every single day, builders and consultants call him asking where something is in a drawing set. Same question, different job, different person — consistently, for years. That's not anecdotal. Before we built anything, we spoke to around 20 builders, consultants, and trades. The feedback was clear: they could see the value immediately and kept asking when they could use it. That's before we wrote a single line of code. Then we built it, showed it — they found it useful. We have LOIs signed and a waitlist confirmed. But the most compelling proof isn't a document. It's 9 years of Justin's phone ringing with the same question. That problem doesn't go away on its own.`,
+    why:"Lead with the lived experience — it's more powerful than LOIs. The 9-year pattern is your strongest signal." },
+
+  { cat:"Market", diff:"medium", q:"What specific feedback have you received from the market?",
+    a:`Consistent across all 20+ people we spoke to — builders, architects, consultants, trades. Same problem, different faces. The traditional way hasn't changed: uploading documents manually, opening PDFs one by one, searching through pages for one detail. What makes the feedback credible isn't just that people said they liked the idea — it's that they were living the pain daily and knew exactly what we meant the moment we described it. Also this: there's a solution like this in the US. People there have access to it. In Australia, nothing. So the market is already validated — it just hasn't been served here. The problem exists, it's been proven worth solving internationally, and there's nothing filling the gap in ANZ yet.`,
+    why:"The US market comparison is powerful. It proves validation without you having to do it from scratch." },
+
+  { cat:"Market", diff:"hard", q:"How do you know this isn't niche — just a few builders you happen to know?",
+    a:`Construction is roughly 10% of Australia's GDP. That's one of the largest industries in the country — 493,000 registered businesses, 2 million employees. Procore has a multi-billion dollar market cap. Aconex was acquired by Oracle for over a billion dollars. The problem is validated at global scale. The only question is which segment you serve. We're going after the 97% of construction businesses with fewer than 20 employees — the ones Procore pricing and complexity excludes. That's not niche. That's the majority of the industry. And they're currently using Google Drive and WhatsApp because nothing affordable and simple has been built for them.`,
+    why:"Lead with construction's share of GDP, then the incumbent valuations, then the untapped SME majority." },
+
+  { cat:"Market", diff:"medium", q:"How do you plan to acquire customers without burning cash?",
+    a:`Construction is relationship-driven. Cold outreach doesn't work here — trust does. Our first customers come from Justin's existing network of builders and consultants who already know and respect him. Mine come from 15 years of mechanical contracting relationships. We're not buying leads — we're converting warm relationships through direct conversations, site visits, and short demos. Once a builder is on the platform, they invite trades and consultants. That's the pincer — one builder pulls through multiple users organically. Customer acquisition cost in the early phase is essentially our time. Paid channels come later, only for the tiers where LTV supports it.`,
+    why:"Relationship-driven sales is your strength here. No paid ads talk at this stage." },
+
+  { cat:"Market", diff:"hard", q:"How do you compete against free tools like WhatsApp, Google Drive, email?",
+    a:`Those tools are the problem we're solving, not our competition. A builder using WhatsApp for messages, Google Drive for files, email for RFIs, Bluebeam for markup, and PDFs for drawings — that's five tools, zero integration, daily switching cost. The real expense isn't software. It's 30 minutes a tradie spends finding a detail that should take 10 seconds. It's the RFI that sat in an inbox for three days. It's the rework bill from an outdated drawing. Tensi replaces that entire fragmented stack with one workflow. The subscription cost is trivial compared to one day of rework on a residential build. Free tools are free because they don't solve the problem. We do.`,
+    why:"Reframe free tools as the cause of the pain, not the competition." },
+
+  { cat:"Market", diff:"medium", q:"What's the pincer effect?",
+    a:`Every builder who joins Tensi runs projects with trades and consultants. When they invite those teams into their project workspace, those trades are now using the platform. A subcontractor working across three builders gets invited onto Tensi for all three projects. At that point, Tensi becomes their default tool across all jobs — not because we sold to them, but because the builders they work with pulled them in. That's the pincer: one builder at the top pulls through multiple subcontractors below. Each of those subcontractors then carries Tensi into their next project regardless of which builder they're working with. Our lower tier grows organically through this effect. We don't pay to acquire those users. The platform earns them.`,
+    why:"This is your GTM moat. Explain the mechanics clearly and confidently." },
+
+  { cat:"Market", diff:"hard", q:"Sales at $12–40K ACV requires a real sales motion. Who closes deals?",
+    a:`Justin and I close every deal at this stage — and that's not a weakness, it's the right model. At $12,000 to $40,000 ACV, you're selling trust as much as software. A builder sitting across from someone who's managed HVAC installations and chased RFIs on real jobs is a completely different conversation than talking to a salesperson who's never been on a site. We speak their language, understand their workflows, answer technical questions without checking with the product team. That credibility closes deals in this industry. The playbook we build through the first 30 customers becomes the hire brief for our first commercial role — we'll know exactly what works before we delegate it.`,
+    why:"Engineering founders selling is a trust advantage in relationship-driven industries." },
+
+  // ── PRODUCT & AI ──
+  { cat:"Product & AI", diff:"hard", q:"Your AI makes claims about construction drawings. What happens when it's wrong?",
+    a:`Every answer Tensi returns shows the source drawing, page number, and location — not a black box. It's a search result with a citation. The user verifies before they act. We're decision support, not autonomous decision-making. Our terms are clear on that distinction. Professional accountability sits with the person making the decision, not the tool that surfaced the information. What we do that manual search doesn't: we track versions so answers always point to the current revision, and we flag superseded drawings. The AI reduces the risk of human error. It doesn't eliminate accountability.`,
+    why:"Source attribution is your liability answer. Know it cold." },
+
+  { cat:"Product & AI", diff:"medium", q:"How does your AI actually work on construction drawings?",
+    a:`Uploaded drawings are processed through our document intelligence layer — PDFs parsed, elements extracted, content indexed for semantic search. When a user asks a question — 'what's the head height on the door to the plant room on level 3' — the system retrieves the relevant drawing location and returns the answer with a direct source reference. We use Gemini API at Tier 1 for the language layer. Document processing runs through Foxit API. The construction-specific intelligence comes from how we've structured the indexing — we understand drawing conventions and the typical information architecture of ANZ construction document sets. Accuracy improves over time as we collect domain data from real projects.`,
+    why:"Don't get lost in tech. Focus on what it does, where accuracy comes from, how it improves." },
+
+  { cat:"Product & AI", diff:"hard", q:"AI costs scale with usage. How does your margin hold up?",
+    a:`We identified this early and it's designed into the architecture. The fix is query caching. In construction, the same questions get asked repeatedly across a project — door specs, services clearances, structural details. Those answers get cached the first time they're retrieved. Every subsequent similar request returns from cache rather than hitting the model. Cost scales with unique queries, not total queries — and in construction, unique queries are a fraction of total queries. We've modelled this at 1,200 paying customers. Infrastructure costs stay controlled. This was a design decision made upfront, not a patch after costs blew out.`,
+    why:"If you know caching cold, you win this question. Lead with it, back it with the modelling." },
+
+  { cat:"Product & AI", diff:"medium", q:"How long does it take a new user to get value from Tensi?",
+    a:`Seconds. Upload a drawing, search, get an answer. That's the design requirement we hold ourselves to in every release. Our users — trades on site, small builder teams, consultants under pressure — have zero tolerance for a learning curve. If there's any friction between opening the product and getting an answer, we've already lost them. They'll go back to WhatsApp. Zero-training UX isn't a feature. It's the condition under which this product works or doesn't work. We test every release against this standard. If it doesn't work on first use for someone who's never seen it, it doesn't ship.`,
+    why:"'Seconds' is the answer. Short, sharp, confident." },
+
+  { cat:"Product & AI", diff:"standard", q:"What's your product roadmap for the next 12 months?",
+    a:`Month 3: DMS Enhancement. Month 5: Submittal workflow + 3D Model Walkthrough. Month 6: AI Agents. Month 7: Collaboration infrastructure. Month 9: AI Search infrastructure. Month 12: AI Voice Agent. Month 15: Mobile App. Each milestone increases daily active use, increases switching cost, and adds a new data layer that deepens the AI moat. The sequence is deliberate — we're not adding features for a roadmap slide. We're building the product that makes Tensi the default platform for construction document intelligence.`,
+    why:"Know the month numbers. They're in the deck. Being specific shows you know the plan." },
+
+  { cat:"Product & AI", diff:"hard", q:"You're dependent on Google Gemini API. What if they change pricing or cut access?",
+    a:`We've already lived this. Early in development we hit a quota issue on Gemini's free tier. We moved to paid Tier 1 and the problem went away. That taught us: we can't treat any single API provider as an unconditional dependency. So we built the architecture so the model layer can be swapped. The workflow logic, document indexing, and UI — none of that is tied to Gemini specifically. If Google changes pricing dramatically, we can move to an alternative without rebuilding the product. The data and workflow are ours regardless of what runs underneath. That's a structural decision, not an aspiration.`,
+    why:"Having lived through this and fixed it is more credible than saying the risk doesn't exist." },
+
+  // ── TEAM ──
+  { cat:"Team", diff:"hard", q:"You have multiple co-founders. Who's running this? What happens if one leaves?",
+    a:`Roles are clear, no overlap. I run product strategy, investor relations, and GTM. Justin runs operations and industry relationships. Giri owns technical architecture. Sriram owns operations execution. Sudhi owns design. Decisions are made by the domain owner — we don't run everything by committee. Founder agreements covering equity, vesting, and departure are in place. One departure is a setback, not a shutdown. The knowledge, code, and relationships aren't concentrated in one person.`,
+    why:"Clarity of roles and legal structure remove founder-drama risk." },
+
+  { cat:"Team", diff:"hard", q:"You also run a contracting business. Are you actually full-time on Tensi?",
+    a:`The contracting business serves two purposes. First, it gives me access to live construction projects — real drawings, real RFIs, real workflows — so I'm continuously testing Tensi against the exact use cases it's built for. That's live product research I couldn't buy. Second, it funds my cost of living so I'm not drawing unnecessary salary from Tensi's runway. Capital efficiency. The transition plan is clear: as the round closes and Tensi requires full operational attention, I step back from contracting. That transition is already planned and doesn't create a gap.`,
+    why:"Frame it as R&D and capital efficiency. Commit to the transition without being defensive." },
+
+  { cat:"Team", diff:"medium", q:"Why are you the right team to build this?",
+    a:`We've lived every part of this problem. Justin has 25 years in civil engineering and HVAC contracting. I have 15 years in engineering and construction. We've managed projects, handled RFIs, dealt with drawing chaos on active sites. What's remarkable is what happened when we brought the rest of the team on. Giri has 24 years in tech architecture and AI, 4 patents, built global-scale platforms at Cisco. No construction background. Sudhi has 24 years in design with 14 international awards. No construction background. It didn't take much convincing. When experienced people with no stake in the industry look at this problem and get on board — that's independent validation. We have the industry know-how AND the tech know-how. That combination is rare.`,
+    why:"The Giri and Sudhi angle is powerful — independent conviction in the problem from domain outsiders." },
+
+  { cat:"Team", diff:"medium", q:"What's Justin's role and why does it matter?",
+    a:`Justin is Co-Founder and Head of Product. He IS the customer. Every day his design and drafting firm works with Tier 2 builders on real ANZ construction projects. The problems Tensi solves are problems he faces in his own business every week. He doesn't need to do user research because he is the user. That gives us an insight advantage that no amount of customer discovery calls can replicate. His industry network is also our most direct GTM channel — when he recommends Tensi to a builder who already trusts him, it lands completely differently than a cold sales message.`,
+    why:"Justin is a strategic asset. Don't undersell what it means to have the customer as co-founder." },
+
+  // ── FINANCIALS ──
+  { cat:"Financials", diff:"hard", q:"Why $1.2M? How did you arrive at that number?",
+    numbers:"47% Product Dev (~$564K) | 27% Talent (~$324K) | 14% Marketing & GTM (~$168K) | 12% Operations & Infra (~$144K)",
+    a:`$1.2M is calculated, not aspirational. Every dollar is allocated: 47% to product development — the engineering work to deliver the roadmap milestones. 27% to talent — primarily a full-time front-end developer immediately, plus planned hires. 14% to marketing and GTM — sales rep, LinkedIn ads, industry expo presence, CRM. 12% to operations and infrastructure — cloud hosting, APIs, platform costs. Less than $1.2M compresses runway below what we need to reach seed-ready metrics. More would be taking capital we can't deploy effectively at this stage. There's no padding.`,
+    why:"Know the allocation percentages cold: 47/27/14/12. If you can't defend the breakdown, the number loses credibility." },
+
+  { cat:"Financials", diff:"hard", q:"What's your valuation and how do you justify it with no revenue?",
+    numbers:"Pre-money: ~$9–10M AUD | Post-money (at $1.2M raise): ~$10.2–11.2M | ANZ pre-seed SaaS median: $7–10M",
+    a:`Our pre-money valuation is $9 to $10 million. At pre-seed with no revenue, valuation isn't a multiple calculation — it's a judgment of team quality, product stage, and market opportunity. Team: 130+ years combined experience across construction, AI, design, operations. Giri has 4 patents and built global-scale platforms at Cisco. Product stage: alpha is live as of April 9 with real users. This is not a pitch deck — it's a working product. Market: $700M serviceable ANZ market, $12B globally, no credible AI-native competitor in our segment. We're squarely in the range for ANZ pre-seed SaaS with a working product and a team of this depth. We're not asking you to fund an idea.`,
+    why:"Team depth, product stage, market size. The valuation is defensible on all three. No apology." },
+
+  { cat:"Financials", diff:"hard", q:"What equity does $1.2M buy? Walk me through the dilution math.",
+    numbers:"Pre-money $9M + $1.2M = Post-money $10.2M | Investor equity: ~11.8% | Founders retain: ~88.2%",
+    a:`At a $9 million pre-money valuation, a $1.2 million investment creates a $10.2 million post-money valuation. The investor receives approximately 11.8% of the company. Founders retain approximately 88.2%. If we're using a SAFE, the investor converts at this cap at the next priced round — typically seed. If seed is raised at $20 to $25 million pre-money — a reasonable expectation if we hit our targets — the pre-seed investor's 11.8% was bought at half the price. That's the return profile for early conviction.`,
+    why:"Know this instantly. Pre-money $9M + $1.2M = $10.2M post. $1.2M / $10.2M = 11.76%. Memorise it." },
+
+  { cat:"Financials", diff:"hard", q:"What if you only give us $500K instead of $1.2M?",
+    numbers:"$500K at $9M pre-money = 5.3% equity | $500K runway = ~7 months | vs $1.2M = 18 months",
+    a:`At a $9 million pre-money, $500,000 buys approximately 5.3% equity. But the more important question is what $500K gets you versus $1.2M — they're different businesses 18 months from now. $500K gets us to roughly 50 paying customers and product-market fit signals. Runway is approximately 7 months — tight. $1.2M gets us to 150+ paying customers, mobile live, AI accuracy materially improved, seed-ready metrics that command better terms. The difference isn't just scale — it's the quality of the position when we go to raise seed. A company with 150 paying customers raises on very different terms than one with 50.`,
+    why:"Know the equity math at different investment levels. $500K = 5.3%. Have it cold." },
+
+  { cat:"Financials", diff:"hard", q:"What if I want 20% equity?",
+    numbers:"20% at $9M pre-money requires ~$2.25M investment | OR implies pre-money of ~$4.8M for $1.2M — below market",
+    a:`For 20% at our valuation, you'd need to invest approximately $2.25 million — more than we're raising and more than we need. If you're suggesting 20% for $1.2 million, that implies a pre-money of $4.8 million. We don't think that reflects the stage we're at — working product in alpha, 130+ years of combined team experience, signed LOIs, a confirmed waitlist, zero prior capital. $4.8M pre-money for a pre-revenue AI SaaS with a live product is below the ANZ market benchmark. We've set the valuation based on team quality, product stage, and market size. That said, we're open to structural conversation — timing discount, pro-rata rights, information rights — but the base valuation reflects what the company is genuinely worth.`,
+    why:"Confident, non-defensive. Know what 20% implies mathematically. Don't cave — show you're open to structure." },
+
+  { cat:"Financials", diff:"medium", q:"What's your monthly burn rate and how long does $1.2M last?",
+    numbers:"$1.2M over 18 months = ~$67K/month average burn | Founders not drawing market-rate salary",
+    a:`$1.2 million over 18 months implies an average burn of approximately $67,000 per month. Not evenly distributed — early months are lower as we bring on hires incrementally, later months increase as the sales motion scales. The burn is controlled by two things: Justin and I are not drawing market-rate salaries from Tensi right now — our personal businesses cover our living costs. That's a deliberate capital efficiency choice. And we have a staged hiring plan — we don't hire roles before we need them. 18 months takes us to the customer count, retention, and usage metrics that make a seed round competitive.`,
+    why:"Know your implied monthly burn: $67K/month. Don't fumble basic arithmetic." },
+
+  { cat:"Financials", diff:"hard", q:"Your projections go from zero to $2.2M revenue in 2027. What's the assumption?",
+    numbers:"2027: 150 companies × ~$14.7K avg ACV = $2.2M ARR | 2028: 350 companies | 2031: 1,200 companies / $16M ARR",
+    a:`$2.2 million ARR in 2027 is 150 companies at an average annual contract value of approximately $14,700. That average blends Starter at $6K, Pro at $12K, and Business at $40K — weighted toward Pro because that's the primary direct outreach target. 150 companies in the first 12 to 18 months of a funded GTM operation is approximately 8 to 10 new paying customers per month from direct outreach, referrals, and the pincer effect. We have a warm pipeline starting from Justin's existing clients and my contracting network. We're not starting from zero. The first 50 come from relationships we already have.`,
+    why:"Work through the arithmetic: 150 companies × $14.7K avg ACV = $2.2M. Know the customer count by tier." },
+
+  { cat:"Financials", diff:"medium", q:"What's your runway with $1.2M and what milestones do you hit?",
+    numbers:"18 months runway | Milestones: 50–150 paying customers, mobile live, AI accuracy benchmarks proven, seed-ready",
+    a:`18 months. That's the target and the standard investors want to see for pre-seed. It takes us to 50 to 150 paying customers with strong daily active use. AI search accuracy consistently above our internal benchmark. Mobile workflow live and used on active sites. A net promoter score that tells us users would genuinely miss Tensi if it disappeared — not just find it useful, but depend on it. And metrics strong enough to go into a seed round with confidence. Customer count, retention rate, daily active use, AI query volume — the signals that show the product is forming habits, not just being trialled.`,
+    why:"18 months is the magic number. Know exactly what you prove in that window." },
+
+  { cat:"Financials", diff:"hard", q:"What's your LTV:CAC ratio?",
+    numbers:"Pro tier ACV: $12K/yr | 3-yr LTV: ~$36K | Founder-led CAC: ~$2–5K | Target LTV:CAC: >5:1",
+    a:`At the Pro tier — $1,000 per month, $12,000 annually — a three-year LTV is approximately $36,000. Our CAC during the founder-led phase is primarily time cost, roughly $2,000 to $5,000 per customer when you factor in founder time. That gives us an LTV:CAC ratio well above 5:1. As we move to paid acquisition, CAC increases — which is why we only deploy paid channels on the $1,000 and $3,000 per month tiers where LTV supports it. The Starter tier grows organically through the pincer effect — effectively zero cash CAC. The unit economics work because we've designed acquisition around LTV at each tier.`,
+    why:"Know the numbers for each tier. Don't just say 'the economics are good' — show the math." },
+
+  { cat:"Financials", diff:"hard", q:"What's your gross margin? Cost per customer?",
+    numbers:"Infrastructure at 1,200 users: $230–500/month | Per-customer: ~$0.20–0.42/month | Target gross margin: >75%",
+    a:`SaaS gross margins at scale run 70 to 85%. We're targeting above 75%. The primary cost of serving a customer is infrastructure — cloud hosting on AWS Sydney, AI API costs, and Foxit document processing. At 1,200 paying customers, we've modelled total infrastructure at $230 to $500 per month — roughly $0.20 to $0.42 per customer per month. The variable cost that concerns us most is AI processing. We've addressed this through query caching — repetitive construction queries return cached answers rather than hitting the model fresh. This flattens the AI cost curve significantly as query volume scales. Margins improve as the customer base grows because fixed costs spread across more paying accounts.`,
+    why:"Know your infrastructure number and the caching strategy that protects margin." },
+
+  { cat:"Financials", diff:"medium", q:"Have you had prior funding or taken on any debt?",
+    numbers:"External capital raised: $0 | Bootstrapped: Jan 2025 – present | Debt: None | Cap table: 100% founding team",
+    a:`Zero external capital. No debt. We've been entirely self-funded from January 2025 — over 16 months of building without a single dollar from outside the team. Every line of code, every design decision, every infrastructure cost covered by the founding team. The cap table is completely clean. No prior investors, no convertible notes from friends and family rounds, no debt obligations, no complicated preference structures. You're coming into a clean, unencumbered company with a working product. We didn't raise money and then start building. We built first, got to alpha, and now we're raising to accelerate.`,
+    why:"A clean cap table and zero prior debt is a significant positive. Lead with it." },
+
+  // ── EQUITY & DEAL ──
+  { cat:"Equity & Deal", diff:"hard", q:"What's the cap table before this raise? Who owns what?",
+    numbers:"Current ownership: 100% founding team | No external shareholders | No prior debt | Clean structure",
+    a:`The cap table is entirely held by the founding team right now. No external shareholders, no prior investors, no advisors with equity stakes. The founding team equity is split across Jay, Justin, Giri, Sriram, Sudhi, Navdeep, and Prarthan based on roles, contributions, and agreed vesting schedules. We share the specific split in formal conversation once there's mutual intent — we keep that detail confidential at this stage. What you need to know: the cap table is clean, the team has appropriate equity to remain motivated through the growth phase, and this raise is the first external dilution event. No skeletons, no overhangs.`,
+    why:"Confirm it's clean and the team is incentivised. Specific split at term sheet stage." },
+
+  { cat:"Equity & Deal", diff:"medium", q:"What vesting schedule do the founders have?",
+    numbers:"Standard: 4-year vesting | 1-year cliff | Monthly vesting after cliff | Protects founders and investors",
+    a:`Four-year vesting with a one-year cliff — standard for ANZ early-stage companies and it protects everyone including investors. The cliff means if any founder departs in the first year, they walk away with nothing and the equity goes back into the pool. After the cliff, vesting is monthly for the remaining three years. Every founder who's still here at year four has fully earned their equity through contribution. It also signals to investors that the founding team is committed to the long game — no one is vesting out quickly and walking away with a chunk of the company.`,
+    why:"Investors ask about vesting to check founder commitment and protect against early departures." },
+
+  { cat:"Equity & Deal", diff:"hard", q:"SAFE or priced round? What are the terms?",
+    numbers:"Instrument: SAFE | Cap: $9–10M pre-money | Discount: 15–20% | MFN clause: yes | Faster and cheaper to close",
+    a:`We're using a SAFE — Simple Agreement for Future Equity — standard for Australian pre-seed in 2026. It closes faster than a priced round, legal costs are significantly lower for both sides, and avoids a full valuation negotiation until seed when there's more data to support it. Key terms: valuation cap of $9 to $10 million pre-money, a discount rate of 15 to 20% giving early investors preferential pricing at conversion, and a most-favoured-nation clause — if we issue a subsequent SAFE on better terms before conversion, existing holders automatically get those same terms. A priced round is an option if an investor strongly prefers it, but it adds cost and time we'd rather put into the product.`,
+    why:"Know the SAFE structure cold. Cap, discount rate, MFN clause. Investors expect you to know the mechanics." },
+
+  { cat:"Equity & Deal", diff:"medium", q:"Do you have an employee option pool?",
+    numbers:"Pool target: 10–12% of post-raise cap table | Standard ANZ pre-seed: 10–15% | For technical and commercial hires",
+    a:`We're establishing an employee option pool as part of this raise — approximately 10 to 12 percent of the post-raise cap table. The standard for ANZ pre-seed is 10 to 15 percent. This gives us room to attract senior engineering, AI, and commercial talent through to seed without going back to create more pool at an awkward time. The pool is specifically for team members — not advisors or service providers. Primarily used for technical hires in the roadmap and a commercial role once the GTM playbook is proven. Every person who helps build this company should have a meaningful stake in its outcome.`,
+    why:"Option pool size matters. Investors want to know dilution is accounted for and you can attract talent." },
+
+  { cat:"Equity & Deal", diff:"medium", q:"Do you offer pro-rata rights?",
+    numbers:"Pro-rata rights: available for lead or significant investors | Protects against dilution at seed round",
+    a:`Yes. We offer pro-rata rights to investors who lead the round or contribute a meaningful portion. Pro-rata means when we raise seed, those investors have the right to maintain their ownership percentage by participating in the new round at new terms. It's a standard investor protection that costs us nothing while you're writing the initial cheque — it only matters later when the company is worth more. For an investor who comes in early at the pre-seed cap and believes in the trajectory, pro-rata is how you protect your position. We want investors who stay with us through multiple rounds. Pro-rata aligns that interest.`,
+    why:"Standard ask from sophisticated investors. Know what it means and offer it confidently." },
+
+  { cat:"Equity & Deal", diff:"medium", q:"Do you expect a board seat or advisory role?",
+    a:`No board seat required at this stage — it's early and we need to move fast. What we want is more valuable than a board seat: an active investor. Someone who picks up the phone when we need advice. Someone with construction industry connections or SaaS scaling experience who opens doors. Someone who helps us prepare for seed before we're in the middle of raising it. We don't want someone who reads a quarterly report and attends a meeting. If there's an investor with specific value to add, we're open to a formal advisory role. The relationship matters more than the title.`,
+    why:"You said this clearly in your conversation. Active engagement, not governance overhead." },
+
+  // ── RISK ──
+  { cat:"Risk", diff:"hard", q:"What's your biggest risk and the contingency?",
+    a:`Two risks. First: speed to market. The AI space is moving fast. The advantage of being first with a purpose-built construction AI tool in ANZ is a window, not a permanent state. If we don't move quickly, that window shrinks. Contingency: alpha is live, we're in front of customers now, and the raise accelerates the timeline. Second: adoption speed. Construction users are resistant to new tools — they've been burned before. Our response is the product itself. Zero-training UX means it works on first use without guidance. Our customer advisory group tests every release before it ships. And AI accuracy: one wrong answer erodes trust faster than any number of correct ones can rebuild. Source attribution on every answer is non-negotiable.`,
+    why:"Speed to market is the most honest primary risk. Shows strategic awareness, not product fear." },
+
+  { cat:"Risk", diff:"hard", q:"What stops Procore or Autodesk from building exactly what you're building?",
+    a:`We saw this live at Sydney Build Expo. Procore is integrating AI — but look at how. They've taken what they already built and plugged a generic AI layer on top. They haven't built AI-native from day one. That's a fundamentally different product. Their system was built for complexity. Simplifying it for SMEs isn't a feature update — it's a different product that cannibalises their enterprise pricing. They have no incentive to do it well. Could they build something like Tensi in the background? Maybe. But they move slowly, their customer base expects the complex system to stay complex, and every month we're in market is a month of domain data, user habits, and network density they can't quickly replicate.`,
+    why:"The Sydney Build Expo observation is real and specific. Shows you're watching the market." },
+
+  { cat:"Risk", diff:"hard", q:"What if you burn through cash faster than expected?",
+    a:`Our personal businesses — my mechanical contracting firm and Justin's design firm — give us financial stability without drawing from Tensi's capital. That's the first buffer. If burn accelerates, we have two levers: reduce GTM spend — the first 50 customers come through direct outreach from Justin and me, which costs time but not significant cash. And defer non-critical hires — the roadmap has sequencing flexibility. The thing we don't cut is engineering quality. A broken product accelerates churn faster than any burn rate problem. We've modelled base and aggressive burn scenarios and know which line items get cut first in each case.`,
+    why:"Show resilience and scenario planning without sounding desperate." },
+
+  { cat:"Risk", diff:"hard", q:"What about professional indemnity and liability for an AI construction tool?",
+    a:`Professional indemnity is our higher priority over general public liability — specifically because of AI output exposure. The risk profile of an AI tool that informs professional decisions is different from a physical product or service engagement. Cyber liability is also in place given we handle sensitive project documentation for multiple clients. Our terms of service explicitly define Tensi's AI as a search and decision support tool — not a certified or verified output. The user remains the responsible professional. We've structured the ToS to reflect this cleanly and taken legal advice on the liability layer. This is not something we've left to figure out later.`,
+    why:"Mature investors ask this. A clear answer on insurance and legal structure builds serious credibility." },
+
+  // ── VISION & EXIT ──
+  { cat:"Vision & Exit", diff:"standard", q:"Where do you see Tensi in 5 years?",
+    a:`Two outcomes — both good for you. Either we're a strong acquisition target, or we're expanding internationally. The companies that would acquire us — Procore, Autodesk, Trimble, Aconex, Nemetschek — don't have a footprint in the ANZ SME segment. When we've built density in ANZ, it's far easier for them to acquire us than roll out their own product at this price point and simplicity level. They're selling at premium enterprise pricing. We're building what they can't profitably reach. The other path: we continue growing, expand into Asia-Pacific where these players also have limited footprint, and build toward controlling construction document intelligence across the region. By year 3 to 4 we expect significant ARR and the acquisition conversation becomes very different.`,
+    why:"'Easier to buy us than build it at this price point' — use that line." },
+
+  { cat:"Vision & Exit", diff:"hard", q:"What's the exit strategy and realistic timeline?",
+    numbers:"Early acquisition interest: 18–30 months | Serious negotiations: 500–1,000 companies (3–4 yrs) | Acquirers: Procore, Autodesk, Trimble, Aconex, Nemetschek",
+    a:`Most credible near-term exit: acquisition. Global construction platforms — Procore, Autodesk, Trimble, Aconex, Nemetschek — all lack deep drawing intelligence for ANZ SMEs. Tensi is an attractive target once we've proven ANZ market density. Early acquisition interest is realistic at 18 to 30 months. More serious negotiations happen at 500 to 1,000 paying companies — roughly 3 to 4 year horizon. At 1,200 companies with $14 to $48 million ARR, at 5 to 8 times revenue multiple, that's a $70 million to $384 million exit. The pre-seed investor at 11.8% is looking at $8M to $45M return on $1.2M invested. There's precedent: Aconex was acquired by Oracle for approximately $1.2 billion AUD in 2018.`,
+    why:"Named acquirers, specific triggers, specific timeline, and a precedent deal." },
+
+  { cat:"Vision & Exit", diff:"hard", q:"What multiple do I get on my money? Give me a realistic scenario.",
+    numbers:"At 1,200 customers / $16M ARR × 5x = $80M exit | × 8x = $128M | Investor at 11.8%: $9.4M–$15.1M return | 7.8–12.6x multiple",
+    a:`Conservative scenario: by 2031 we're at 1,200 paying companies and approximately $16 million ARR. A SaaS business at our projected growth rate with strong retention trades at 5 to 8 times revenue at acquisition. At 5 times — $80 million exit. At 8 times — $128 million. At 11.8% equity, that's a return of $9.4 million to $15.1 million on a $1.2 million investment. That's a 7.8 to 12.6 times multiple. In a more optimistic scenario — faster growth, earlier acquisition, strategic premium — those numbers move materially higher. Pre-seed investors get the best entry point and the most upside. That's what you're being compensated for with the lower entry price today.`,
+    why:"Do this calculation before the meeting. Have it memorised. Investors want numbers, not adjectives." },
+
+  { cat:"Vision & Exit", diff:"medium", q:"What does success look like at end of the $1.2M raise?",
+    a:`50 to 150 paying customers with strong daily active use. Steady increase in active users month on month — not a spike from a launch, then flat. AI accuracy consistently above our internal benchmark. A net promoter score that tells us customers would genuinely miss Tensi if it disappeared — not just find it useful, but depend on it. And metrics strong enough to go into a seed round with confidence. Customer count, retention rate, daily active use, AI query volume — the signals that show the product is forming habits, not just being trialled. Where we're putting the money and what comes out of it — that's how we measure success.`,
+    why:"You said this in your conversation: 'where we're putting the money and what the output is — that's the validation.'" },
+
+  { cat:"Vision & Exit", diff:"medium", q:"Why start in Australia? Why not go global from day one?",
+    a:`ANZ is our proving ground and it's a deliberate choice, not a limitation. English-language, high-activity construction market, underserved by enterprise players, and we have existing relationships and credibility here. We can move faster in a market we understand than one we're cold-entering. The ANZ market alone is large enough to build a strong, fundable, acquirable business. Once the model is proven here — product-market fit, GTM motion, pricing — the expansion playbook writes itself. Going global too early is how companies burn through capital and end up with nothing to show for it anywhere. We don't want to scale noise before we've found signal.`,
+    why:"Focus beats premature global ambition. Investors respect disciplined market entry." },
+
+  // ── FOUNDER ──
+  { cat:"Founder", diff:"hard", q:"You built this while working full time and managing a family. Why is that confidence, not concern?",
+    a:`Because it means we ship under real constraints. Not in a funded bubble with 18 months of runway and no other obligations — with full-time businesses, family commitments, and zero margin for wasted effort. Every decision had to count because we couldn't afford to iterate endlessly. We launched alpha on April 9. That happened while Justin was running his design firm, while I was running the contracting business, while both of us were managing our families. That's not in spite of those constraints — that's proof we execute regardless of them. Most startups burn through a seed round before they launch a product. We launched before we had one. If you're asking what we'll do with $1.2 million behind us — look at what we did with none.`,
+    why:"This is your single strongest proof of execution. Deliver it with conviction. End with that last line." },
+
+  { cat:"Founder", diff:"hard", q:"What have you personally sacrificed to get Tensi to this point?",
+    a:`Nights and weekends for over a year, consistently. We self-funded every dollar — no salary from Tensi, no external capital, no safety net. The contracting business keeps the lights on at home, and every hour outside of that went into Tensi. I'm not saying this for sympathy. I'm saying it because it tells you something about what we believe this is worth. Investors ask about commitment because they've seen founders walk away when it gets hard. We've already been through the hard part — building with nothing, launching under pressure — and we're still here. The commitment isn't a promise about the future. It's already demonstrated.`,
+    why:"Don't perform sacrifice. Be factual. The commitment is demonstrated, not promised." },
+
+  { cat:"Founder", diff:"hard", q:"What would have to happen for you to walk away from Tensi?",
+    a:`The market would have to prove that builders and trades are genuinely satisfied with the tools they have — that the pain we're solving doesn't exist. That's not what we see. Every conversation with someone in the industry reinforces that the pain is real and current tools aren't solving it. Or the team would have to break beyond repair. We've stress-tested that through the alpha build. Short of those two things — we're not walking away. We've invested too much in time, money, and personal credibility, and the problem is too real. Walking away is the one option we haven't planned for.`,
+    why:"Answer without hesitation. Any pause here loses the room." },
+
+  { cat:"Founder", diff:"hard", q:"If I back you, what am I actually getting beyond the product?",
+    a:`Two founders who built a working product under maximum constraint without any external capital. A team with over 130 years of combined experience across construction, AI, design, and operations — not as a list of credentials, but as people who apply that experience to every product decision. The only construction SaaS team in ANZ who are also their own daily customer, which means the product improves continuously from real project use. And founders who will not waste your capital — not because we're cautious, but because we know exactly what it costs to build without it.`,
+    why:"Direct and grounded. Answer like you mean every word." },
+
+  { cat:"Founder", diff:"medium", q:"What keeps you up at night about Tensi?",
+    a:`Two things. AI accuracy at the moment a tradie makes a costly site decision based on an answer we returned. We think about that constantly — which is why source attribution is non-negotiable and why accuracy benchmarks are part of every release. One wrong answer on a live site can break trust that took months to build. And adoption speed. Construction is relationship-driven and adoption of new tools is slow. Every month we're not embedded in a builder's workflow is a month they could be pulled toward something else. Both are solvable engineering and sales problems. But they're the ones I think about when I should be sleeping.`,
+    why:"Self-awareness and active risk management. Don't pretend nothing worries you." },
+
+  { cat:"Founder", diff:"hard", q:"Give me one sentence — why should I write the cheque?",
+    a:`Two founders with 40 years of combined industry experience, a live product with real users, a team with over 130 years of collective depth across construction, AI, design, and operations — built entirely without external capital, while running businesses and raising families — and we are just getting started.`,
+    why:"Memorise this word for word. Deliver it without a pause. This is your close." },
+];
+
+// State
+let currentIdx = 0;
+let isFlipped = false;
+let doneSet = new Set();
+let currentFilter = 'all';
+let filteredCards = [...CARDS];
+
+// Touch tracking
+let touchStartX = 0;
+let touchStartY = 0;
+let isDragging = false;
+
+const categories = ['All', ...new Set(CARDS.map(c => c.cat))];
+
+function init() {
+  buildCatTabs();
+  buildDrawerList();
+  renderCard();
+  updateProgress();
+  updateStats();
+
+  // Touch events on card area
+  const cardArea = document.getElementById('cardArea');
+  cardArea.addEventListener('touchstart', onTouchStart, { passive: true });
+  cardArea.addEventListener('touchmove', onTouchMove, { passive: false });
+  cardArea.addEventListener('touchend', onTouchEnd, { passive: true });
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') nextCard();
+    else if (e.key === 'ArrowLeft') prevCard();
+    else if (e.key === ' ') { e.preventDefault(); flipCard(); }
+    else if (e.key === 'Enter') toggleDone();
+  });
+}
+
+function buildCatTabs() {
+  const tabs = document.getElementById('catTabs');
+  tabs.innerHTML = categories.map(cat =>
+    `<button class="cat-tab${cat === 'All' ? ' active' : ''}" onclick="setFilter('${cat}', this)">${cat}</button>`
+  ).join('');
+}
+
+function setFilter(cat, btn) {
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = cat;
+  filteredCards = cat === 'All' ? [...CARDS] : CARDS.filter(c => c.cat === cat);
+  currentIdx = 0;
+  isFlipped = false;
+  document.getElementById('flashcard').classList.remove('flipped');
+  renderCard();
+  updateProgress();
+  buildDrawerList();
+}
+
+function renderCard() {
+  if (filteredCards.length === 0) return;
+  const card = filteredCards[currentIdx];
+  const globalIdx = CARDS.indexOf(card);
+
+  // Front
+  document.getElementById('cardCat').textContent = card.cat;
+  document.getElementById('cardNum').textContent = String(currentIdx + 1).padStart(2, '0');
+  document.getElementById('cardQuestion').textContent = card.q;
+
+  const diffEl = document.getElementById('cardDiff');
+  diffEl.textContent = card.diff.charAt(0).toUpperCase() + card.diff.slice(1);
+  diffEl.className = 'card-diff diff-' + card.diff;
+
+  // Back
+  document.getElementById('backQ').textContent = card.q;
+
+  let backHTML = '';
+  if (card.numbers) {
+    backHTML += `<div class="back-numbers">${card.numbers.replace(/\|/g, '<br>')}</div>`;
+  }
+  backHTML += `<div class="answer-section-label">Answer</div>`;
+  backHTML += `<div class="answer-body">${card.a}</div>`;
+  backHTML += `<div class="why-section"><div class="why-label">Why They Ask This</div><div class="why-body">${card.why}</div></div>`;
+  document.getElementById('cardBackBody').innerHTML = backHTML;
+  document.getElementById('cardBackBody').scrollTop = 0;
+
+  // Done button state
+  const doneBtn = document.getElementById('doneBtn');
+  doneBtn.classList.toggle('marked', doneSet.has(globalIdx));
+  doneBtn.textContent = doneSet.has(globalIdx) ? '✓ Practised' : '✓ Done';
+}
+
+function updateProgress() {
+  const total = filteredCards.length;
+  const current = currentIdx + 1;
+  document.getElementById('progressLabel').textContent = `Question ${current} of ${total}`;
+  document.getElementById('progressPercent').textContent = Math.round((currentIdx / Math.max(total - 1, 1)) * 100) + '%';
+  document.getElementById('progressFill').style.width = ((currentIdx / Math.max(total - 1, 1)) * 100) + '%';
+}
+
+function updateStats() {
+  document.getElementById('doneCount').textContent = doneSet.size;
+  document.getElementById('doneCountDrawer').textContent = doneSet.size;
+  document.getElementById('totalCountDrawer').textContent = CARDS.length;
+
+  // Update drawer list checkmarks
+  document.querySelectorAll('.dqi-check').forEach((el, i) => {
+    const globalIdx = CARDS.indexOf(filteredCards[i]);
+    el.classList.toggle('done', doneSet.has(globalIdx));
+    el.textContent = doneSet.has(globalIdx) ? '✓' : '';
+  });
+}
+
+function buildDrawerList() {
+  const list = document.getElementById('drawerList');
+  list.innerHTML = filteredCards.map((card, i) => {
+    const globalIdx = CARDS.indexOf(card);
+    const isDone = doneSet.has(globalIdx);
+    return `<div class="drawer-q-item${i === currentIdx ? ' current' : ''}" onclick="goToCard(${i}); closeDrawer();">
+      <span class="dqi-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="dqi-text">${card.q}</span>
+      <span class="dqi-check${isDone ? ' done' : ''}">${isDone ? '✓' : ''}</span>
+    </div>`;
+  }).join('');
+}
+
+function goToCard(idx) {
+  currentIdx = idx;
+  isFlipped = false;
+  document.getElementById('flashcard').classList.remove('flipped');
+  renderCard();
+  updateProgress();
+  buildDrawerList();
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
+}
+
+function nextCard() {
+  if (currentIdx < filteredCards.length - 1) {
+    currentIdx++;
+    isFlipped = false;
+    document.getElementById('flashcard').classList.remove('flipped');
+    renderCard();
+    updateProgress();
+    buildDrawerList();
+  } else {
+    showComplete();
+  }
+}
+
+function prevCard() {
+  if (currentIdx > 0) {
+    currentIdx--;
+    isFlipped = false;
+    document.getElementById('flashcard').classList.remove('flipped');
+    renderCard();
+    updateProgress();
+    buildDrawerList();
+  }
+}
+
+function toggleDone() {
+  const card = filteredCards[currentIdx];
+  const globalIdx = CARDS.indexOf(card);
+  if (doneSet.has(globalIdx)) {
+    doneSet.delete(globalIdx);
+  } else {
+    doneSet.add(globalIdx);
+  }
+  renderCard();
+  updateStats();
+  buildDrawerList();
+}
+
+function showComplete() {
+  document.getElementById('cs-done').textContent = doneSet.size;
+  document.getElementById('cs-total').textContent = filteredCards.length;
+  document.getElementById('complete-screen').classList.add('show');
+}
+
+function restartDeck() {
+  document.getElementById('complete-screen').classList.remove('show');
+  goToCard(0);
+}
+
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+// Touch / swipe handling
+function onTouchStart(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  isDragging = false;
+}
+
+function onTouchMove(e) {
+  const dx = e.touches[0].clientX - touchStartX;
+  const dy = e.touches[0].clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+    isDragging = true;
+    e.preventDefault();
+    // Show feedback
+    if (dx < -30) {
+      document.getElementById('sfLeft').classList.add('show');
+      document.getElementById('sfRight').classList.remove('show');
+    } else if (dx > 30) {
+      document.getElementById('sfRight').classList.add('show');
+      document.getElementById('sfLeft').classList.remove('show');
+    } else {
+      document.getElementById('sfLeft').classList.remove('show');
+      document.getElementById('sfRight').classList.remove('show');
+    }
+  }
+}
+
+function onTouchEnd(e) {
+  document.getElementById('sfLeft').classList.remove('show');
+  document.getElementById('sfRight').classList.remove('show');
+
+  if (!isDragging) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 60) {
+    if (dx < 0) nextCard();
+    else prevCard();
+  }
+  isDragging = false;
+}
+
+// Hide splash
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hidden');
+    init();
+  }, 1400);
+});
+</script>
+</body>
+</html>
