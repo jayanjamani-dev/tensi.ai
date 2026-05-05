@@ -458,7 +458,7 @@ body::before{
     <div class="sf l" id="sfl">Next →</div>
     <div class="sf r" id="sfr">← Prev</div>
     <div class="fw"><div class="fc" id="fc" onclick="flip()">
-      <div class="face front">
+      <div class="face front" id="ff">
         <div class="ft"><span class="ctag" id="fcat"></span><span class="diff" id="fdiff"></span></div>
         <div class="fb"><div class="qnum" id="fnum"></div><div class="qtxt" id="fq"></div><div class="th">tap to reveal</div></div>
       </div>
@@ -572,10 +572,10 @@ let idx=0,flipped=false,done=new Set(),filt='All',filtered=[...ALL_Q],txS=0,tyS=
 
 function init(){
   bTabs();bDrw();render();uProg();uStats();
-  const ca=document.getElementById('ca');
-  ca.addEventListener('touchstart',ts,{passive:true});
-  ca.addEventListener('touchmove',tm,{passive:false});
-  ca.addEventListener('touchend',te,{passive:true});
+  const ff=document.getElementById('ff');
+  ff.addEventListener('touchstart',ts,{passive:true});
+  ff.addEventListener('touchmove',tm,{passive:false});
+  ff.addEventListener('touchend',te,{passive:true});
   document.addEventListener('keydown',e=>{
     if(e.key==='ArrowRight')next();
     else if(e.key==='ArrowLeft')prev();
@@ -687,8 +687,6 @@ function cDrw(){document.getElementById('drw').classList.remove('open');document
 
 function ts(e){txS=e.touches[0].clientX;tyS=e.touches[0].clientY;drag=false;}
 function tm(e){
-  const bb=document.getElementById('bb');
-  if(bb&&bb.contains(e.target))return; // let native scroll happen inside answer
   const dx=e.touches[0].clientX-txS,dy=e.touches[0].clientY-tyS;
   if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>10){
     drag=true;e.preventDefault();
