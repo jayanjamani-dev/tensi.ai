@@ -221,6 +221,26 @@ body::before{
   box-shadow:var(--shadow);
 }
 .back.face{overflow:hidden}
+#anspanel{
+  position:absolute;
+  top:12px;bottom:12px;
+  left:50%;transform:translateX(-50%);
+  width:calc(100% - 40px);max-width:580px;
+  background:var(--card-back);
+  border:1px solid var(--green-border);
+  box-shadow:var(--shadow);
+  z-index:30;
+  display:none;flex-direction:column;
+  overflow:hidden;
+}
+#anspanel::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  opacity:0.6;
+  background-image:radial-gradient(circle, var(--dot-color) 1px, transparent 1.2px);
+  background-size:16px 16px;
+}
+#anspanel.show{display:flex}
+#apbt{cursor:pointer;flex-shrink:0}
 
 /* FRONT */
 .front{background:var(--card);border:1px solid var(--border)}
@@ -464,9 +484,12 @@ body::before{
       </div>
       <div class="face back">
         <div class="bt"><span class="blbl">Answer</span><span class="bqt" id="bqt"></span></div>
-        <div class="bb" id="bb"></div>
       </div>
     </div></div>
+    <div id="anspanel">
+      <div class="bt" id="apbt" onclick="flip()"><span class="blbl">Answer ↩ tap to flip back</span><span class="bqt" id="apbqt"></span></div>
+      <div class="bb" id="bb"></div>
+    </div>
   </div>
   <div class="acts">
     <button class="abtn bprev" onclick="prev()">← Prev</button>
@@ -620,6 +643,7 @@ function render(){
   d.textContent=c.diff.charAt(0).toUpperCase()+c.diff.slice(1);
   d.className='diff '+c.diff;
   document.getElementById('bqt').textContent=c.q;
+  document.getElementById('apbqt').textContent=c.q;
   let h='';
   if(c.nums){
     h+=`<div class="nbox">${c.nums.split('|').map(s=>{const p=s.trim().split(':');return p.length>1?`<b>${p[0]}:</b>${p.slice(1).join(':')}`:s.trim();}).join('<br>')}</div>`;
@@ -663,27 +687,26 @@ function bDrw(){
   }).join('');
 }
 
-function gTo(i){idx=i;flipped=false;document.getElementById('fc').classList.remove('flipped');render();uProg();bDrw();}
+function gTo(i){idx=i;flipped=false;document.getElementById('fc').classList.remove('flipped');document.getElementById('anspanel').classList.remove('show');render();uProg();bDrw();}
 function flip(){
   flipped=!flipped;
   const fc=document.getElementById('fc');
+  const ap=document.getElementById('anspanel');
   fc.classList.toggle('flipped',flipped);
-  // iOS Safari blocks scroll inside preserve-3d containers.
-  // Remove it after the flip animation (550ms) so .bb can scroll.
   if(flipped){
-    setTimeout(()=>{fc.style.transformStyle='flat';},560);
+    setTimeout(()=>{ap.classList.add('show');},560);
   } else {
-    fc.style.transformStyle='preserve-3d';
+    ap.classList.remove('show');
   }
 }
 
 function next(){
-  if(idx<filtered.length-1){idx++;flipped=false;document.getElementById('fc').classList.remove('flipped');render();uProg();bDrw();}
+  if(idx<filtered.length-1){idx++;flipped=false;document.getElementById('fc').classList.remove('flipped');document.getElementById('anspanel').classList.remove('show');render();uProg();bDrw();}
   else{document.getElementById('csd').textContent=done.size;document.getElementById('cst2').textContent=filtered.length;document.getElementById('cscreen').classList.add('show');}
 }
 
 function prev(){
-  if(idx>0){idx--;flipped=false;document.getElementById('fc').classList.remove('flipped');render();uProg();bDrw();}
+  if(idx>0){idx--;flipped=false;document.getElementById('fc').classList.remove('flipped');document.getElementById('anspanel').classList.remove('show');render();uProg();bDrw();}
 }
 
 function tDone(){
