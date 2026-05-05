@@ -664,7 +664,18 @@ function bDrw(){
 }
 
 function gTo(i){idx=i;flipped=false;document.getElementById('fc').classList.remove('flipped');render();uProg();bDrw();}
-function flip(){flipped=!flipped;document.getElementById('fc').classList.toggle('flipped',flipped);}
+function flip(){
+  flipped=!flipped;
+  const fc=document.getElementById('fc');
+  fc.classList.toggle('flipped',flipped);
+  // iOS Safari blocks scroll inside preserve-3d containers.
+  // Remove it after the flip animation (550ms) so .bb can scroll.
+  if(flipped){
+    setTimeout(()=>{fc.style.transformStyle='flat';},560);
+  } else {
+    fc.style.transformStyle='preserve-3d';
+  }
+}
 
 function next(){
   if(idx<filtered.length-1){idx++;flipped=false;document.getElementById('fc').classList.remove('flipped');render();uProg();bDrw();}
