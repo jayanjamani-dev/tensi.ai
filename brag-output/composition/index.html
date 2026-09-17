@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Tensi Investor Prep — Brag</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/music/audio-data.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #002022;
+        font-family: 'Inter', sans-serif;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #002022;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #002022;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #scene2,
+      #scene3,
+      #scene4 {
+        opacity: 0;
+      }
+
+      /* ---------- Scene 1 — Hook ---------- */
+      #scene1 .inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .eyebrow {
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: 7px;
+        text-transform: uppercase;
+        color: rgba(245, 242, 236, 0.55);
+        margin-bottom: 18px;
+      }
+      .logo {
+        font-size: 196px;
+        font-weight: 800;
+        letter-spacing: -8px;
+        line-height: 1;
+        color: #f5f2ec;
+        display: inline-block;
+      }
+      .logo .si {
+        color: #ffcd00;
+        display: inline-block;
+      }
+      .dateline {
+        font-size: 32px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        color: rgba(245, 242, 236, 0.55);
+        margin-top: 26px;
+      }
+
+      /* ---------- Scene 2 — Reveal ---------- */
+      .card-wrap {
+        width: 760px;
+        height: 820px;
+        perspective: 2400px;
+      }
+      .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+      }
+      .card-face {
+        position: absolute;
+        inset: 0;
+        border-radius: 32px;
+        padding: 64px;
+        display: flex;
+        flex-direction: column;
+        background: #002628;
+        border: 1px solid rgba(245, 242, 236, 0.12);
+        backface-visibility: hidden;
+      }
+      .card-back {
+        transform: rotateY(180deg);
+        justify-content: center;
+      }
+      .tag-row {
+        display: flex;
+        align-items: center;
+      }
+      .tag-cat {
+        display: inline-block;
+        padding: 9px 22px;
+        border: 1px solid rgba(255, 205, 0, 0.35);
+        color: #ffcd00;
+        border-radius: 999px;
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: 1px;
+      }
+      .tag-diff {
+        display: inline-block;
+        padding: 9px 22px;
+        border-radius: 999px;
+        background: rgba(220, 80, 80, 0.14);
+        color: #e07070;
+        font-size: 20px;
+        font-weight: 500;
+        margin-left: 16px;
+      }
+      .qnum {
+        color: rgb(121, 140, 138);
+        font-size: 22px;
+        letter-spacing: 1px;
+        margin-top: 44px;
+      }
+      .qtext {
+        font-size: 60px;
+        font-weight: 700;
+        line-height: 1.28;
+        margin-top: 22px;
+        color: #f5f2ec;
+        max-width: 620px;
+      }
+      .hint {
+        margin-top: auto;
+        color: rgb(121, 140, 138);
+        font-size: 22px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+      }
+      .blbl {
+        color: #4ecba0;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 22px;
+      }
+      .answer {
+        font-size: 52px;
+        font-weight: 700;
+        color: #f5f2ec;
+        line-height: 1.32;
+        max-width: 600px;
+      }
+      .why-strip {
+        margin-top: 44px;
+        padding-top: 32px;
+        border-top: 1px solid rgba(245, 242, 236, 0.14);
+      }
+      .why-lbl {
+        color: rgba(245, 242, 236, 0.5);
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+      .why-text {
+        font-size: 28px;
+        color: rgba(245, 242, 236, 0.78);
+        line-height: 1.4;
+        max-width: 580px;
+      }
+
+      /* ---------- Scene 3 — Categories + Progress ---------- */
+      #scene3 .inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 76px;
+      }
+      .tabs-row {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 1500px;
+      }
+      .tab-pill {
+        padding: 18px 36px;
+        border-radius: 999px;
+        border: 1px solid rgba(245, 242, 236, 0.18);
+        background: rgba(245, 242, 236, 0.05);
+        color: #f5f2ec;
+        font-size: 26px;
+        font-weight: 500;
+      }
+      .progress-wrap {
+        width: 940px;
+      }
+      .progress-label-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 24px;
+        color: rgba(245, 242, 236, 0.55);
+        margin-bottom: 20px;
+      }
+      .progress-count {
+        color: #ffcd00;
+      }
+      .progress-track {
+        width: 100%;
+        height: 12px;
+        border-radius: 8px;
+        background: rgba(245, 242, 236, 0.12);
+        overflow: hidden;
+      }
+      .progress-fill {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: #ffcd00;
+        border-radius: 8px;
+        transform: scaleX(0);
+        transform-origin: left center;
+      }
+
+      /* ---------- Scene 4 — Outro ---------- */
+      #scene4 .inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .check-ring {
+        margin-bottom: 40px;
+      }
+      .ready-title {
+        font-size: 100px;
+        font-weight: 800;
+        letter-spacing: -2px;
+        color: #f5f2ec;
+      }
+      .ready-sub {
+        font-size: 34px;
+        font-weight: 500;
+        color: rgba(245, 242, 236, 0.6);
+        margin-top: 22px;
+      }
+      .wordmark {
+        font-size: 46px;
+        font-weight: 800;
+        letter-spacing: -2px;
+        color: #f5f2ec;
+        margin-top: 54px;
+      }
+      .wordmark .si {
+        color: #ffcd00;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="tensi-brag"
+      data-start="0"
+      data-width="1920"
+      data-height="1080"
+      data-duration="22.5"
+    >
+      <!-- Scene 1 — Hook -->
+      <div id="scene1" class="scene">
+        <div class="inner">
+          <div id="s1-eyebrow" class="eyebrow">Investor Prep</div>
+          <div class="logo"><span id="s1-logo-ten">ten</span><span id="s1-logo-si" class="si">si</span></div>
+          <div id="s1-dateline" class="dateline">May 7 · 85 Questions</div>
+        </div>
+      </div>
+
+      <!-- Scene 2 — Reveal: the hard question -->
+      <div id="scene2" class="scene">
+        <div class="card-wrap">
+          <div id="card-inner" class="card-inner">
+            <div class="card-face card-front">
+              <div id="s2-tags" class="tag-row">
+                <span class="tag-cat">Equity &amp; Deal</span>
+                <span class="tag-diff">Hard</span>
+              </div>
+              <div id="s2-qnum" class="qnum">72</div>
+              <div id="s2-qtext" class="qtext" data-layout-allow-overlap="true">What if I want 20% equity?</div>
+              <div id="s2-hint" class="hint">Tap to reveal</div>
+            </div>
+            <div class="card-face card-back">
+              <div id="s2-blbl" class="blbl" data-layout-allow-overlap="true">Answer</div>
+              <div id="s2-answer" class="answer">$2.25 million — more than we're raising.</div>
+              <div class="why-strip">
+                <div id="s2-why-lbl" class="why-lbl">Why They Ask This</div>
+                <div id="s2-why-text" class="why-text">Know what 20% implies mathematically.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 3 — Highlight: drilling every category -->
+      <div id="scene3" class="scene">
+        <div class="inner">
+          <div id="s3-tabs" class="tabs-row">
+            <span class="tab-pill">Market</span>
+            <span class="tab-pill">Product &amp; AI</span>
+            <span class="tab-pill">Team</span>
+            <span class="tab-pill">Financials</span>
+            <span class="tab-pill">Equity &amp; Deal</span>
+            <span class="tab-pill">Risk</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-label-row">
+              <span><span id="s3-count" class="progress-count">0</span> of 85 practised</span>
+              <span id="s3-pct">0%</span>
+            </div>
+            <div class="progress-track">
+              <div id="s3-fill" class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 4 — Outro: you're ready -->
+      <div id="scene4" class="scene">
+        <div class="inner">
+          <svg id="check-ring" class="check-ring" width="180" height="180" viewBox="0 0 180 180">
+            <circle cx="90" cy="90" r="78" fill="none" stroke="rgba(78,203,160,0.22)" stroke-width="6" />
+            <circle
+              id="check-circle"
+              cx="90"
+              cy="90"
+              r="78"
+              fill="none"
+              stroke="#4ecba0"
+              stroke-width="6"
+              stroke-linecap="round"
+              transform="rotate(-90 90 90)"
+            />
+            <path
+              id="check-mark"
+              d="M56 92 L80 116 L124 64"
+              fill="none"
+              stroke="#4ecba0"
+              stroke-width="10"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div id="s4-title" class="ready-title">You're Ready.</div>
+          <div id="s4-sub" class="ready-sub">Every question practised. May 7 is yours.</div>
+          <div id="s4-wordmark" class="wordmark"><span>ten</span><span class="si">si</span></div>
+        </div>
+      </div>
+
+      <!-- Audio -->
+      <audio
+        id="bgm"
+        src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
+        data-start="0"
+        data-duration="22.5"
+        data-track-index="10"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="sfx-drop"
+        src="assets/sfx/interface/drop_001.ogg"
+        data-start="4.91"
+        data-track-index="11"
+        data-volume="0.6"
+      ></audio>
+      <audio
+        id="sfx-flip"
+        src="assets/sfx/impact/impactSoft_medium_002.ogg"
+        data-start="8.14"
+        data-track-index="12"
+        data-volume="0.7"
+      ></audio>
+      <audio
+        id="sfx-success"
+        src="assets/sfx/interface/bong_001.ogg"
+        data-start="18.2"
+        data-track-index="13"
+        data-volume="0.7"
+      ></audio>
+    </div>
+
+    <script>
+      var tl = gsap.timeline({ paused: true });
+
+      /* ============ Scene 1 — Hook (0 - 4.91s) ============ */
+      tl.fromTo('#s1-eyebrow', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, 0.3);
+      tl.fromTo(
+        '.logo',
+        { scale: 0.86, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.7, ease: 'back.out(1.5)' },
+        0.9,
+      );
+      tl.fromTo('#s1-dateline', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, 2.0);
+
+      /* ---- Transition T1 = 4.91s : Scene1 -> Scene2 (blur crossfade, medium) ---- */
+      var T1 = 4.91;
+      tl.to('#scene1', { filter: 'blur(10px)', scale: 1.03, opacity: 0, duration: 0.5, ease: 'power2.inOut' }, T1);
+      tl.fromTo(
+        '#scene2',
+        { filter: 'blur(10px)', scale: 0.97, opacity: 0 },
+        { filter: 'blur(0px)', scale: 1, opacity: 1, duration: 0.5, ease: 'power2.inOut' },
+        T1 + 0.1,
+      );
+
+      /* ============ Scene 2 — Reveal: the hard question ============ */
+      tl.fromTo('#s2-tags', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }, 5.5);
+      tl.fromTo('#s2-qnum', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' }, 5.6);
+      tl.fromTo('#s2-qtext', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, 5.7);
+
+      // Tap-to-reveal hint: finite pulse (2 cycles) — no infinite repeat
+      tl.fromTo('#s2-hint', { opacity: 0 }, { opacity: 0.75, duration: 0.4, ease: 'power2.out' }, 6.4);
+      tl.to('#s2-hint', { opacity: 0.6, duration: 0.5, ease: 'sine.inOut', repeat: 2, yoyo: true }, 6.9);
+
+      // Flip — beat-locked: 8.74s (strong cue, 0.99)
+      var FLIP_START = 8.14;
+      tl.fromTo(
+        '#card-inner',
+        { rotateY: 0 },
+        { rotateY: 180, duration: 0.6, ease: 'power2.inOut' },
+        FLIP_START, // beat-locked: 8.74s (lands at FLIP_START + duration)
+      );
+      tl.fromTo('#s2-answer', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }, 8.9);
+      tl.fromTo(
+        '#s2-why-lbl, #s2-why-text',
+        { y: 10, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
+        9.3,
+      );
+
+      /* ---- Transition T2 = 12.02s : Scene2 -> Scene3 ---- */
+      var T2 = 12.02;
+      tl.to('#scene2', { filter: 'blur(10px)', scale: 1.03, opacity: 0, duration: 0.5, ease: 'power2.inOut' }, T2);
+      tl.fromTo(
+        '#scene3',
+        { filter: 'blur(10px)', scale: 0.97, opacity: 0 },
+        { filter: 'blur(0px)', scale: 1, opacity: 1, duration: 0.5, ease: 'power2.inOut' },
+        T2 + 0.1,
+      );
+
+      /* ============ Scene 3 — Highlight: drilling every category ============ */
+      // Category tabs — stagger group, start on strong cue 13.11s
+      tl.fromTo(
+        '.tab-pill',
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out', stagger: 0.06 },
+        13.11, // beat-locked: 13.11s (strong cue, 0.98)
+      );
+
+      // Progress bar + counter — land on beat 14.73s
+      var PROGRESS_START = 13.73;
+      tl.fromTo(
+        '#s3-fill',
+        { scaleX: 0 },
+        { scaleX: 61 / 85, duration: 1.0, ease: 'power2.out' },
+        PROGRESS_START, // beat-locked: 14.73s (lands at PROGRESS_START + duration)
+      );
+      var progressCounter = { val: 0 };
+      tl.to(
+        progressCounter,
+        {
+          val: 61,
+          duration: 1.0,
+          ease: 'power2.out',
+          onUpdate: function () {
+            var v = Math.round(progressCounter.val);
+            document.getElementById('s3-count').textContent = v;
+            document.getElementById('s3-pct').textContent = Math.round((v / 85) * 100) + '%';
+          },
+        },
+        PROGRESS_START,
+      );
+
+      /* ---- Transition T3 = 16.93s : Scene3 -> Scene4 ---- */
+      var T3 = 16.93;
+      tl.to('#scene3', { filter: 'blur(10px)', scale: 1.03, opacity: 0, duration: 0.5, ease: 'power2.inOut' }, T3);
+      tl.fromTo(
+        '#scene4',
+        { filter: 'blur(10px)', scale: 0.97, opacity: 0 },
+        { filter: 'blur(0px)', scale: 1, opacity: 1, duration: 0.5, ease: 'power2.inOut' },
+        T3 + 0.1,
+      );
+
+      /* ============ Scene 4 — Outro: you're ready ============ */
+      // Checkmark ring draw + headline — beat-locked landing 18.56s
+      var CHECK_LEN = document.getElementById('check-circle').getTotalLength();
+      var MARK_LEN = document.getElementById('check-mark').getTotalLength();
+      gsap.set('#check-circle', { strokeDasharray: CHECK_LEN, strokeDashoffset: CHECK_LEN });
+      gsap.set('#check-mark', { strokeDasharray: MARK_LEN, strokeDashoffset: MARK_LEN });
+
+      var CHECK_START = 18.2;
+      tl.to('#check-circle', { strokeDashoffset: 0, duration: 0.36, ease: 'power2.out' }, CHECK_START); // beat-locked: 18.56s
+      tl.to('#check-mark', { strokeDashoffset: 0, duration: 0.22, ease: 'power2.out' }, CHECK_START + 0.18);
+      tl.fromTo(
+        '#s4-title',
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.36, ease: 'power2.out' },
+        CHECK_START,
+      );
+
+      tl.fromTo('#s4-sub', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, 19.0);
+      tl.fromTo(
+        '#s4-wordmark',
+        { y: 12, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' },
+        20.5,
+      );
+
+      /* ============ Music volume automation ============ */
+      tl.set('#bgm', { volume: 0.3 }, 0); // baseline bed level (data-volume is replaced by these tweens)
+      tl.to('#bgm', { volume: 0.34, duration: 1.0 }, 15.5); // gentle swell into the outro
+      tl.to('#bgm', { volume: 0, duration: 1.0 }, 21.3); // fade under the final hold
+
+      /* ============ Subtle audio-reactive glow (pre-extracted band data) ============ */
+      function scheduleGlow(startT, endT, elId, colorRgb, ampScale, mode) {
+        if (typeof AUDIO_DATA === 'undefined') return;
+        var fps = AUDIO_DATA.fps;
+        var f0 = Math.max(0, Math.floor(startT * fps));
+        var f1 = Math.min(AUDIO_DATA.totalFrames - 1, Math.floor(endT * fps));
+        for (var f = f0; f <= f1; f++) {
+          (function (frame) {
+            var bands = AUDIO_DATA.frames[frame].bands;
+            var band = bands[Math.min(bands.length - 1, 13)];
+            var t = frame / fps;
+            tl.call(
+              function () {
+                var el = document.getElementById(elId);
+                if (!el) return;
+                var blur = 8 + band * 16 * ampScale;
+                var alpha = 0.3 + band * 0.4 * ampScale;
+                if (mode === 'text') {
+                  el.style.textShadow = '0 0 ' + blur.toFixed(1) + 'px rgba(' + colorRgb + ',' + alpha.toFixed(2) + ')';
+                } else {
+                  el.style.filter = 'drop-shadow(0 0 ' + blur.toFixed(1) + 'px rgba(' + colorRgb + ',' + alpha.toFixed(2) + '))';
+                }
+              },
+              [],
+              t,
+            );
+          })(f);
+        }
+      }
+
+      // Scene 1: amber "si" breathes gently while the hook holds, before T1
+      scheduleGlow(1.6, T1, 's1-logo-si', '255,205,0', 0.6, 'text');
+      // Scene 4: green checkmark ring breathes gently after the payoff lands
+      scheduleGlow(18.56, 22.5, 'check-ring', '78,203,160', 0.7, 'svg');
+
+      window.__timelines['tensi-brag'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
